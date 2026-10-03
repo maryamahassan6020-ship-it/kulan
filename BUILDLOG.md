@@ -1,175 +1,72 @@
-# Week 12 – Convex Backend & Authentication
+Create a `BUILDLOG.md` file for my Week 13 React project, **Kulan**.
 
-## Architecture Planning
+The Week 13 assignment is about using AI to help build or update a React project, while I still review and verify the AI-generated code myself.
 
-Before writing any code, I used AI to analyze my Kulan repository and propose a Convex database architecture that matches my existing React + Vite user interface.
+Write the BUILDLOG.md in simple, natural English. It should sound like a real student developer wrote it, not like AI marketing text.
 
-### AI Prompt Used
+Include these sections:
 
-I asked the AI to:
+# Week 13 Build Log
 
-* Analyze my repository
-* Explain the current application structure
-* Propose a Convex database schema
-* Use exactly four tables:
+## Project
 
-  * users
-  * events
-  * rsvps
-  * categories
-* Explain relationships before generating any code
+Kulan
 
-### Repository Analysis Summary
+## Week 13 Goal
 
-The AI identified that Kulan is built with:
+Explain that the goal was to work on the Kulan React/Vite project and use AI assistance while still checking the generated code and making sure the project works.
 
-* React 19
-* TypeScript
-* Vite
-* Tailwind CSS
-* Lucide React Icons
-* Framer Motion
+## Prompt I Used
 
-The application already contains:
+Include a realistic prompt explaining what I asked the AI to do.
 
-* Homepage with event cards
-* Search and filtering interface
-* Event details page
-* Login and signup forms
-* Event creation workflow
+The prompt should say that I wanted the AI to:
 
-The AI recommended keeping the existing UI unchanged and connecting it to a Convex backend.
+* review the existing Kulan project
+* understand the current React/Vite structure before changing anything
+* help improve or update the existing project
+* keep the current functionality
+* avoid unnecessary changes
+* keep the existing Convex setup
+* use the existing project structure
+* make the UI and code consistent with the existing project
+* avoid placeholder features
+* explain important changes
+* make sure the code is working
+* avoid adding unnecessary dependencies
 
-## Proposed Database Structure
+## AI Changes
 
-### users
+Describe the main types of changes the AI helped with. Do not invent specific features that are not present in the project.
 
-Stores application users and organizers.
+## Verification
 
-Fields:
+Explain that I checked the generated code instead of blindly accepting it.
 
-* name
-* email
-* avatar
-* bio
-* role
-* createdAt
+Include:
 
-### categories
+* `npm run build`
+* checking the project structure
+* checking Git status
+* reviewing the changed files
+* making sure there were no build errors
 
-Stores event categories used for filtering.
+Mention the successful build result:
 
-Fields:
+`✓ 1741 modules transformed.`
 
-* name
-* slug
-* icon
-* description
-* color
+and that Vite successfully created the `dist` folder.
 
-### events
+## Git
 
-Stores all event information displayed by the application.
+Explain that the project was initialized as a Git repository and connected to:
 
-Fields:
+`https://github.com/maryamahassan6020-ship-it/kulan.git`
 
-* title
-* description
-* coverImage
-* categoryId
-* organizerId
-* startTime
-* endTime
-* location
-* isVirtual
-* capacity
-* price
-* status
-* createdAt
+Mention that the local project was committed and pushed to GitHub.
 
-### rsvps
+## What I Learned
 
-Stores attendance records between users and events.
+Briefly explain that the main lesson was to prompt AI clearly, review its output, test the project, and verify the changes before accepting them.
 
-Fields:
-
-* eventId
-* userId
-* status
-* guestCount
-* note
-* updatedAt
-
-## Relationship Design
-
-The AI proposed the following relationships:
-
-* One organizer can create many events.
-* One category can contain many events.
-* One user can RSVP to many events.
-* One event can contain many RSVPs.
-
-The RSVP table acts as a many-to-many relationship between users and events.
-
-## Why RSVPs Are Separate
-
-The RSVP data is stored in its own table because:
-
-* One user can join multiple events.
-* One event can have multiple attendees.
-* Attendance can be queried efficiently.
-* Duplicate RSVPs can be prevented through indexing.
-
-## My Understanding
-
-I understand that events should only contain event information while attendance data belongs in a dedicated RSVP table.
-
-This structure allows Kulan to support real user accounts, event creation, event participation, and category filtering while keeping the database organized and scalable.
-
-## Status
-
-Architecture planning completed.
-
-No Convex code has been generated yet.
-
-Next step:
-Create convex/schema.ts using the approved database design.
-## Week 12 Error Diagnosis
-
-Error:
-TypeError: Cannot destructure property 'signIn' of 'useAuthActions(...)' as it is undefined
-
-Most Likely Causes:
-1. Component rendered outside ConvexAuthProvider
-2. Convex Auth provider not initialized
-3. Incorrect Password provider import
-
-Root Cause:
-Auth components were rendered outside the ConvexAuthProvider tree.
-
-Fix:
-Wrapped the entire application inside ConvexAuthProvider and corrected the Password provider import.
-
-Result:
-Authentication, login, signup, logout, and session persistence work correctly.
-## Week 12 Testing
-
-Successfully tested locally.
-
-- Convex backend running locally
-- Sign up works
-- Login works
-- Logout works
-- Session persists after refresh
-- Create Event protected for guests
-
-Issue encountered:
-[CONVEX A(auth:signIn)] Connection lost while action was in flight
-
-Root cause:
-Google AI Studio Preview environment lost connection to Convex Auth.
-
-Verification:
-Authentication worked correctly when tested locally with:
-- npx convex dev
-- npm run dev
+Keep the whole file concise and student-friendly. Do not make claims about features or changes that are not confirmed by the project files.
