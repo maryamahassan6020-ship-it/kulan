@@ -1,0 +1,6 @@
+{
+  "name": "Kulan",
+  "description": "Community events platform for discovering, creating, organizing gatherings and managing RSVPs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
