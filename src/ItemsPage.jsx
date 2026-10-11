@@ -1,26 +1,19 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { fetchItems } from "./api/itemsApi.js";
+import { useItemsStore } from "./store/useItemsStore";
 import { EventCard } from "./components/EventCard";
-import { LoadingState, ErrorState } from "./components/States";
-import { Landmark } from "lucide-react";
+import { LoadingState, ErrorState, EmptyState } from "./components/States";
+import { Landmark, Bookmark } from "lucide-react";
 
 export function ItemsPage() {
-  const [items, setItems] = useState([]);
-  const [status, setStatus] = useState("loading");
+  const items = useItemsStore((state) => state.items);
+  const status = useItemsStore((state) => state.status);
+  const loadItems = useItemsStore((state) => state.loadItems);
+  const toggleItem = useItemsStore((state) => state.toggleItem);
 
   useEffect(() => {
-    setStatus("loading");
-
-    fetchItems()
-      .then((data) => {
-        setItems(data || []);
-        setStatus("success");
-      })
-      .catch(() => {
-        setStatus("error");
-      });
-  }, []);
+    loadItems();
+  }, [loadItems]);
 
   if (status === "loading") {
     return (
@@ -56,6 +49,19 @@ export function ItemsPage() {
     );
   }
 
+  if (items.length === 0) {
+    return (
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+            Public Meetings
+          </h1>
+        </div>
+        <EmptyState message="No public meetings available right now." />
+      </main>
+    );
+  }
+
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
@@ -73,13 +79,38 @@ export function ItemsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {items.map((meeting) => (
-          <Link
+          <div
             key={meeting.id}
-            to={`/items/${meeting.id}`}
-            className="block h-full group/link no-underline focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-xl"
+            className={`relative rounded-xl transition-all ${
+              meeting.isSelected ? "ring-2 ring-blue-600 shadow-md" : ""
+            }`}
           >
-            <EventCard event={meeting} />
-          </Link>
+            <Link
+              to={`/items/${meeting.id}`}
+              className="block h-full group/link no-underline focus:outline-none rounded-xl"
+            >
+              <EventCard event={meeting} />
+            </Link>
+
+            {/* Week 14 Interactive Action: toggleItem */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleItem(meeting.id);
+              }}
+              className={`absolute top-3 right-3 z-10 p-2 rounded-full backdrop-blur-md transition-colors cursor-pointer ${
+                meeting.isSelected
+                  ? "bg-blue-600 text-white shadow-md"
+                  : "bg-white/80 text-slate-600 hover:bg-white hover:text-blue-600 shadow-xs"
+              }`}
+              title={meeting.isSelected ? "Deselect meeting" : "Select meeting"}
+              aria-label={meeting.isSelected ? "Deselect meeting" : "Select meeting"}
+            >
+              <Bookmark className={`w-4 h-4 ${meeting.isSelected ? "fill-current" : ""}`} />
+            </button>
+          </div>
         ))}
       </div>
     </main>

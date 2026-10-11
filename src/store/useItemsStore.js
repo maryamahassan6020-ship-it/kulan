@@ -1,3 +1,5 @@
+import { create } from "zustand";
+
 const API_URL = "https://api.openpublica.com/v1/meetings";
 
 function formatLocation(govId) {
@@ -53,43 +55,49 @@ function mapMeeting(m) {
       : undefined,
     status: "upcoming",
     createdAt: startTime,
+    isSelected: false,
   };
 }
 
-export async function fetchItems() {
-  const res = await fetch(`${API_URL}?limit=15`);
+export const useItemsStore = create((set) => ({
+  items: [],
+  status: "idle",
 
-  if (!res.ok) {
-    throw new Error(`Failed to fetch items: ${res.status} ${res.statusText}`);
-  }
+  loadItems: async () => {
+    set({ status: "loading" });
 
-  const result = await res.json();
-  const rawList = Array.isArray(result.data)
-    ? result.data
-    : Array.isArray(result)
-      ? result
-      : [];
+    try {
+      const res = await fetch(`${API_URL}?limit=15`);
 
-  return rawList.map(mapMeeting);
-}
+      if (!res.ok) {
+        throw new Error(`Failed to fetch meetings: ${res.status} ${res.statusText}`);
+      }
 
-export async function fetchItemById(id) {
-  const res = await fetch(`${API_URL}/${id}`);
+      const result = await res.json();
+      const rawList = Array.isArray(result.data)
+        ? result.data
+        : Array.isArray(result)
+          ? result
+          : [];
 
-  if (res.status === 404 || res.status === 400) {
-    return null;
-  }
+      const mappedItems = rawList.map(mapMeeting);
 
-  if (!res.ok) {
-    throw new Error(`Failed to fetch item: ${res.status} ${res.statusText}`);
-  }
+      set({
+        items: mappedItems,
+        status: "success",
+      });
+    } catch (error) {
+      set({ status: "error" });
+    }
+  },
 
-  const result = await res.json();
-  const m = result.data || result;
+  toggleItem: (id) => {
+    set((state) => ({
+      items: state.items.map((item) =>
+        item.id === id ? { ...item, isSelected: !item.isSelected } : item
+      ),
+    }));
+  },
+}));
 
-  if (!m || (typeof m === "object" && Object.keys(m).length === 0)) {
-    return null;
-  }
-
-  return mapMeeting(m);
-}
+export default useItemsStore;

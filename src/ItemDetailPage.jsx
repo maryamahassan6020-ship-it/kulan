@@ -1,28 +1,26 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { fetchItemById } from "./api/itemsApi.js";
+import { useItemsStore } from "./store/useItemsStore";
 import { ErrorState } from "./components/States";
 import { Calendar, MapPin, ArrowLeft, Tag, Globe } from "lucide-react";
 
 export function ItemDetailPage() {
   const { id } = useParams();
-  const [item, setItem] = useState(null);
-  const [status, setStatus] = useState("loading");
+  const items = useItemsStore((state) => state.items);
+  const status = useItemsStore((state) => state.status);
+  const loadItems = useItemsStore((state) => state.loadItems);
+
+  const item = useItemsStore((state) =>
+    state.items.find((m) => String(m.id) === String(id))
+  );
 
   useEffect(() => {
-    setStatus("loading");
+    if (items.length === 0 && status !== "loading") {
+      loadItems();
+    }
+  }, [items.length, status, loadItems]);
 
-    fetchItemById(id)
-      .then((data) => {
-        setItem(data);
-        setStatus("success");
-      })
-      .catch(() => {
-        setStatus("error");
-      });
-  }, [id]);
-
-  if (status === "loading") {
+  if (status === "loading" || (status === "idle" && items.length === 0)) {
     return (
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <Link
